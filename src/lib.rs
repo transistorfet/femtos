@@ -10,9 +10,9 @@ use core::ops::{Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign};
 /// In webassembly, using u128 results in exceedingly slow runtimes, so we use u64 instead
 /// which is enough for 5 hours of simulation time.
 #[cfg(not(target_arch = "wasm32"))]
-type Femtos = u128;
+pub type Femtos = u128;
 #[cfg(target_arch = "wasm32")]
-type Femtos = u64;
+pub type Femtos = u64;
 
 /// Represents a duration of time in femtoseconds
 ///
@@ -254,10 +254,10 @@ impl Duration {
     /// # Examples
     ///
     /// ```
-    /// use femtos::Duration;
+    /// use femtos::{Duration, Femtos};
     ///
-    /// assert_eq!(Duration::from_secs(1).checked_add(Duration::from_secs(1)), Some(Duration::from_secs(2)))
-    /// assert_eq!(Duration::from_secs(1).checked_add(Duration::from_femtos(Femtos::MAX)), None)
+    /// assert_eq!(Duration::from_secs(1).checked_add(Duration::from_secs(1)), Some(Duration::from_secs(2)));
+    /// assert_eq!(Duration::from_secs(1).checked_add(Duration::from_femtos(Femtos::MAX)), None);
     /// ```
     #[inline]
     pub const fn checked_add(self, rhs: Self) -> Option<Self> {
@@ -275,8 +275,8 @@ impl Duration {
     /// ```
     /// use femtos::Duration;
     ///
-    /// assert_eq!(Duration::from_secs(1).checked_sub(Duration::from_secs(1)), Some(Duration::ZERO))
-    /// assert_eq!(Duration::from_secs(1).checked_sub(Duration::from_femtos(2), None)
+    /// assert_eq!(Duration::from_secs(1).checked_sub(Duration::from_secs(1)), Some(Duration::ZERO));
+    /// assert_eq!(Duration::from_femtos(1).checked_sub(Duration::from_femtos(2)), None);
     /// ```
     #[inline]
     pub const fn checked_sub(self, rhs: Self) -> Option<Self> {
@@ -406,10 +406,13 @@ impl Instant {
     /// # Examples
     ///
     /// ```
-    /// use femtos::Instant;
+    /// use femtos::{Instant, Duration, Femtos};
     ///
-    /// assert_eq!(Instant::START.checked_add(Duration::from_secs(1)).as_duration(), Some(Duration::from_secs(1)))
-    /// assert_eq!(Instant::START.checked_add(Duration::from_femtos(Femtos::MAX)).as_duration(), None)
+    /// assert_eq!(
+    ///     Instant::START.checked_add(Duration::from_secs(1)).map(|i| i.as_duration()),
+    ///     Some(Duration::from_secs(1))
+    /// );
+    /// assert_eq!(Instant::FOREVER.checked_add(Duration::from_femtos(1)), None);
     /// ```
     #[inline]
     pub const fn checked_add(self, duration: Duration) -> Option<Self> {
@@ -425,10 +428,13 @@ impl Instant {
     /// # Examples
     ///
     /// ```
-    /// use femtos::Instant;
+    /// use femtos::{Instant, Duration, Femtos};
     ///
-    /// assert_eq!(Instant::FOREVER.checked_sub(Duration::from_secs(1)).as_duration(), Some(Duration::from_femtos(Femtos::MAX - 1)))
-    /// assert_eq!(Instant::START.checked_sub(Duration::from_secs(1)).as_duration(), None)
+    /// assert_eq!(
+    ///     Instant::FOREVER.checked_sub(Duration::from_femtos(1)).map(|i| i.as_duration()),
+    ///     Some(Duration::from_femtos(Femtos::MAX - 1))
+    /// );
+    /// assert_eq!(Instant::START.checked_sub(Duration::from_secs(1)), None);
     /// ```
     #[inline]
     pub const fn checked_sub(self, duration: Duration) -> Option<Self> {
@@ -536,7 +542,7 @@ impl Frequency {
     /// # Examples
     ///
     /// ```
-    /// use femtos::Frequency;
+    /// use femtos::{Duration, Frequency};
     ///
     /// assert_eq!(Frequency::from_hz(1).period_duration(), Duration::from_secs(1));
     /// ```

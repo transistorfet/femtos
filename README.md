@@ -4,5 +4,5 @@
 
 # `femtos`
 
->  A femtosecond representation of time, duration, and frequency
+>  A femtosecond-based representation of time, duration, and frequency, for the purpose of simulation
 

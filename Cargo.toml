@@ -9,6 +9,7 @@ description = "a femtosecond-based representation of time, duration, and frequen
 authors = ["transistor fet <trans@jabberwocky.ca>"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/transistorfet/femtos"
+readme = "README.md"
 
 [dependencies]
 
