@@ -2,8 +2,8 @@
 #![warn(missing_docs)]
 #![no_std]
 
+use core::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 use core::time;
-use core::ops::{Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign};
 
 /// Type to use for storing femtoseconds
 ///
@@ -152,9 +152,7 @@ impl Duration {
     /// ```
     #[inline]
     pub const fn from_femtos(femtos: Femtos) -> Self {
-        Self {
-            femtos,
-        }
+        Self { femtos }
     }
 
     /// Returns the number of _whole_ seconds contained by this `Duration`.
@@ -291,7 +289,8 @@ impl Add for Duration {
     type Output = Self;
 
     fn add(self, rhs: Self) -> Self::Output {
-        self.checked_add(rhs).expect("clock duration overflow during addition")
+        self.checked_add(rhs)
+            .expect("clock duration overflow during addition")
     }
 }
 
@@ -305,13 +304,28 @@ impl Sub for Duration {
     type Output = Self;
 
     fn sub(self, rhs: Self) -> Self::Output {
-        self.checked_sub(rhs).expect("clock duration overflow during subtraction")
+        self.checked_sub(rhs)
+            .expect("clock duration overflow during subtraction")
     }
 }
 
 impl SubAssign for Duration {
     fn sub_assign(&mut self, rhs: Self) {
         *self = *self - rhs;
+    }
+}
+
+impl Mul<u32> for Duration {
+    type Output = Self;
+
+    fn mul(self, rhs: u32) -> Self::Output {
+        Self::from_femtos(self.femtos * rhs as Femtos)
+    }
+}
+
+impl MulAssign<u32> for Duration {
+    fn mul_assign(&mut self, rhs: u32) {
+        *self = Self::from_femtos(self.femtos * rhs as Femtos);
     }
 }
 
@@ -326,6 +340,20 @@ impl Mul<u64> for Duration {
 impl MulAssign<u64> for Duration {
     fn mul_assign(&mut self, rhs: u64) {
         *self = Self::from_femtos(self.femtos * rhs as Femtos);
+    }
+}
+
+impl Div<u32> for Duration {
+    type Output = Self;
+
+    fn div(self, rhs: u32) -> Self::Output {
+        Self::from_femtos(self.femtos / rhs as Femtos)
+    }
+}
+
+impl DivAssign<u32> for Duration {
+    fn div_assign(&mut self, rhs: u32) {
+        *self = Self::from_femtos(self.femtos / rhs as Femtos);
     }
 }
 
@@ -351,7 +379,6 @@ impl Div<Duration> for Duration {
     }
 }
 
-
 impl From<Duration> for time::Duration {
     fn from(value: Duration) -> Self {
         time::Duration::from_nanos(value.as_nanos())
@@ -363,7 +390,6 @@ impl From<time::Duration> for Duration {
         Duration::from_nanos(value.as_nanos() as u64)
     }
 }
-
 
 /// Represents time from the start of the simulation
 ///
@@ -481,9 +507,7 @@ impl Frequency {
     /// ```
     #[inline]
     pub const fn from_hz(hertz: u32) -> Self {
-        Self {
-            hertz,
-        }
+        Self { hertz }
     }
 
     /// Creates a new `Frequency` from the specified number of kilohertz
@@ -497,9 +521,7 @@ impl Frequency {
     /// ```
     #[inline]
     pub const fn from_khz(khz: u32) -> Self {
-        Self {
-            hertz: khz * 1_000,
-        }
+        Self { hertz: khz * 1_000 }
     }
 
     /// Creates a new `Frequency` from the specified number of megahertz
@@ -579,4 +601,3 @@ impl DivAssign<u32> for Frequency {
         *self = Self::from_hz(self.hertz / rhs);
     }
 }
-
