@@ -1,0 +1,40 @@
+name: test
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+env:
+  RUSTFLAGS: '--deny warnings'
+
+jobs:
+  test-ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Select rust version
+        run: |
+          rustup toolchain install 1.60 --profile minimal --no-self-update
+          rustup default 1.60
+
+      - name: Run tests with default features
+        run: |
+          cargo test --workspace
+
+      - name: Run tests with all features
+        run: |
+          cargo test --workspace #--features=std,fugit,femtos
+
+      - name: Run test with no_std
+        run: |
+          cargo test --workspace --no-default-features
+
+
